@@ -20,7 +20,7 @@ pub fn load_dynamic_image(img: image::DynamicImage) -> AppResult<PNGImage> {
     Ok(PNGImage {
         width: width,
         height: height,
-        data: img.raw_pixels(),
+        data: img.to_bytes(),
         color_type: color_type,
         bit_depth: bit_depth,
     })
@@ -49,13 +49,21 @@ pub fn load_png(filepath: &str) -> AppResult<PNGImage> {
 fn convert_color_png_type(ct: image::ColorType) -> (png::ColorType, png::BitDepth) {
     use png::ColorType::*;
     let (ct, bits) = match ct {
-        image::ColorType::Gray(bits) => (Grayscale, bits),
-        image::ColorType::RGB(bits) => (RGB, bits),
-        image::ColorType::Palette(bits) => (Indexed, bits),
-        image::ColorType::GrayA(bits) => (GrayscaleAlpha, bits),
-        image::ColorType::RGBA(bits) => (RGBA, bits),
-        image::ColorType::BGRA(bits) => (RGBA, bits),
-        image::ColorType::BGR(bits) => (RGB, bits),
+        // Not a thing anymore?
+        //image::ColorType::Palette(bits) => (Indexed, bits),
+        image::ColorType::L8 => (Grayscale, 8),
+        image::ColorType::Rgb8 => (RGB, 8),
+        image::ColorType::La8 => (GrayscaleAlpha, 8),
+        image::ColorType::Rgba8 => (RGBA, 8),
+        image::ColorType::Bgra8 => (RGBA, 8),
+        image::ColorType::Bgr8 => (RGB, 8),
+
+        image::ColorType::L16 => (Grayscale, 16),
+        image::ColorType::Rgb16 => (RGB, 16),
+        image::ColorType::La16 => (GrayscaleAlpha, 16),
+        image::ColorType::Rgba16 => (RGBA, 16),
+
+        _ => (RGB, 8)
     };
     (ct, png::BitDepth::from_u8(bits).unwrap())
 }
